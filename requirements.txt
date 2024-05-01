@@ -1,3 +1,8 @@
+numpy
 pip
 streamlit
+random
+json
+request
+bs4
 tensorflow
