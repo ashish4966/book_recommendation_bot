@@ -1,7 +1,6 @@
 numpy
 pip
 streamlit
-json
 request
 bs4
 tensorflow
