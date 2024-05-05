@@ -4,40 +4,42 @@ import pickle
 import random
 import nltk
 import requests
+from bs4 import BeautifulSoup
+from nltk.stem import WordNetLemmatizer
+from tensorflow.keras.models import load_model
 import json
+import os
+
+
+# Download necessary NLTK data
 nltk.download('punkt')
 nltk.download('wordnet')
-from nltk.stem import WordNetLemmatizer
-lemmatizer = WordNetLemmatizer()
-from bs4 import BeautifulSoup
-from tensorflow.keras.models import load_model
 
-# Load the model from the HDF5 file
+
 model = load_model('chatbot_model.h5')
+
 
 # Functions from your project
 def scrape_goodreads(category):
-    # Your existing scraping code here
-    def scrape_goodreads(category):
-        url = f"https://www.goodreads.com/search?utf8=%E2%9C%93&q={category}&search_type=books"
-        req = requests.get(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'})
+    url = f"https://www.goodreads.com/search?utf8=%E2%9C%93&q={category}&search_type=books"
+    req = requests.get(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'})
 
     content = BeautifulSoup(req.content, 'html.parser')
     books = content.find_all('a', class_='bookTitle')
     authors = content.find_all('a', class_="authorName")
 
-    data = []
+    result_html = "<h2>Search Results</h2>"
     for book, author in zip(books, authors):
         book_name = book.find('span', itemprop='name').text.strip()
         author_name = author.find('span', itemprop='name').text.strip()
-        data.append({'Book': book_name, 'Author': author_name})
+        result_html += f"<p><strong>{book_name}</strong> by {author_name}</p>"
 
-    return json.dumps(data, indent=4)
+    return result_html
 
 def clean_up_sentence(sentence):
+    lemmatizer = WordNetLemmatizer()  # Declare lemmatizer here
     sentence_words = nltk.word_tokenize(sentence)
     sentence_words = [lemmatizer.lemmatize(word.lower()) for word in sentence_words]
-
     return sentence_words
 
 def bow(sentence, words, show_details=True):
@@ -54,20 +56,33 @@ def bow(sentence, words, show_details=True):
                 bag[i] = 1
                 if show_details:
                     print ("found in bag: %s" % w)
-
+    
     return(np.array(bag))
 
-words=[]
+# Load intents and populate the words list
+words = []
 classes = []
-documents = []
 ignore_words = ['?', '!']
 
-words = [lemmatizer.lemmatize(w.lower()) for w in words if w not in ignore_words]
+# intents = pickle.load(open('intents.pkl','rb'))
+data_file = open('capstoneIndentPart1.json').read()
+intents = json.loads(data_file)
+for intent in intents['intents']:
+    for pattern in intent['patterns']:
+        # Tokenize and lemmatize each word in the pattern
+        tokens = nltk.word_tokenize(pattern)
+        words.extend(tokens)
+        # Add the tag of the intent to the classes list
+        classes.append(intent['tag'])
+
+# Lemmatize and remove duplicates from the words list
+lemmatizer = WordNetLemmatizer()  # Declare lemmatizer here
+words = [lemmatizer.lemmatize(word.lower()) for word in words if word not in ignore_words]
 words = sorted(list(set(words)))
 
 def predict_class(sentence, model):
     # filter out predictions below a threshold
-    p = bow(sentence, words,show_details=False)
+    p = bow(sentence, words, show_details=False)
     res = model.predict(np.array([p]))[0]
     ERROR_THRESHOLD = 0.25
     results = [[i, r] for i, r in enumerate(res) if r > ERROR_THRESHOLD]
@@ -80,31 +95,28 @@ def predict_class(sentence, model):
 
     return return_list
 
-
-
 def getResponse(ints, intents_json):
     tag = ints[0]['intent']
     list_of_intents = intents_json['intents']
     for i in list_of_intents:
         if(i['tag']== tag):
             if tag == 'book_search':
-              category = input("Sure, I'd be happy to recommend a book. What type of book are you in the mood for? ")
-              result = scrape_goodreads(category)
+                category = st.text_input("Sure, I'd be happy to recommend a book. What type of book are you in the mood for?")
+                if category:
+                    result = scrape_goodreads(category)
+                else:
+                    result = "Please enter a category."
             else:
-              result = random.choice(i['responses'])
+                result = random.choice(i['responses'])
             break
 
     return result
 
-intents = pickle.load(open('intents.pkl','rb'))
-
 def chatbot_response(msg):
     # Your existing chatbot code here
-
     ints = predict_class(msg, model)
     res = getResponse(ints, intents)
     return res
-
 
 # Streamlit UI
 st.title('Book Recommendation Chatbot')
@@ -120,7 +132,7 @@ if option == 'Book Recommendation':
     if st.button('Get Recommendations'):
         if category:
             result = scrape_goodreads(category)
-            st.json(result)
+            st.markdown(result, unsafe_allow_html=True)
         else:
             st.warning('Please enter a category.')
 
@@ -132,5 +144,3 @@ elif option == 'Chat with the Bot':
             st.text_area('Bot:', value=response, height=200, max_chars=None, key=None)
         else:
             st.warning('Please enter a message.')
-
-# Streamlit app
