@@ -1,0 +1,67 @@
+{
+    "intents": [
+        {
+            "tag": "greeting",
+            "patterns": [
+                "Hello",
+                "Hi",
+                "Hey",
+                "Greetings",
+                "Good morning",
+                "Good afternoon",
+                "Good evening"
+            ],
+            "responses": [
+                "Hello! How can I help you today?",
+                "Hi there! What can I do for you?",
+                "Hey! What brings you here today?"
+            ]
+        },
+        {
+            "tag": "goodbye",
+            "patterns": [
+                "Goodbye",
+                "Bye",
+                "See you later",
+                "Adios",
+                "Take care",
+                "bye bye",
+                "babyee",
+                "see you later"
+            ],
+            "responses": [
+                "Goodbye! If you have any more questions, feel free to ask.",
+                "Bye! Have a great day!"
+            ]
+        },
+        {
+            "tag": "thanks",
+            "patterns": [
+                "Thanks",
+                "Thank you",
+                "Thanks a lot",
+                "Appreciate it",
+                "Thank you so much",
+                "much appreciated",
+                "thanks for help",
+                "dhanyawad"
+            ],
+            "responses": [
+                "You're welcome! If you need assistance, feel free to ask.",
+                "No problem! Let me know if there's anything else I can help with."
+            ]
+        },
+        {
+            "tag": "book_search",
+            "patterns": [
+                "Can you recommend a book?",
+                "I'm looking for a book",
+                "Recommend me something to read"
+            ],
+            "responses": [
+                "Certainly! What genre are you interested in?",
+                "Sure, I'd be happy to recommend a book. What type of book are you in the mood for?"
+            ]
+        }
+    ]
+}
