@@ -80,11 +80,13 @@ lemmatizer = WordNetLemmatizer()  # Declare lemmatizer here
 words = [lemmatizer.lemmatize(word.lower()) for word in words if word not in ignore_words]
 words = sorted(list(set(words)))
 
+classes = sorted(list(set(classes)))
+
 def predict_class(sentence, model):
     # filter out predictions below a threshold
     p = bow(sentence, words, show_details=False)
     res = model.predict(np.array([p]))[0]
-    ERROR_THRESHOLD = 0.25
+    ERROR_THRESHOLD = 0.3
     results = [[i, r] for i, r in enumerate(res) if r > ERROR_THRESHOLD]
 
     # sort by strength of probability
@@ -100,6 +102,7 @@ def getResponse(ints, intents_json):
     list_of_intents = intents_json['intents']
     for i in list_of_intents:
         if(i['tag']== tag):
+            print(tag)
             if tag == 'book_search':
                 category = st.text_input("Sure, I'd be happy to recommend a book. What type of book are you in the mood for?")
                 if category:
