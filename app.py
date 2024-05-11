@@ -150,4 +150,3 @@ elif option == 'Chat with the Bot':
             if msg.lower() == "recommend me a book":
                 response = scrape_goodreads('')
                 st.text_area('Bot:', value=response, height=200, max_chars=None, key=None)
-                
