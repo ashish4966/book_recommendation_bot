@@ -124,8 +124,8 @@ def chatbot_response(msg):
 # Streamlit UI
 st.title('Book Recommendation Chatbot')
 
-# Main section for user interaction
-option = st.selectbox(
+# Sidebar for user input
+option = st.sidebar.selectbox(
     'Select an action',
     ('Book Recommendation', 'Chat with the Bot')
 )
@@ -147,6 +147,3 @@ elif option == 'Chat with the Bot':
             st.text_area('Bot:', value=response, height=200, max_chars=None, key=None)
         else:
             st.warning('Please enter a message.')
-            if msg.lower() == "recommend me a book":
-                response = scrape_goodreads('')
-                st.text_area('Bot:', value=response, height=200, max_chars=None, key=None)
