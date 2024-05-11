@@ -124,13 +124,14 @@ def chatbot_response(msg):
 # Streamlit UI
 st.title('Book Recommendation Chatbot')
 
-# User interaction section
-option = st.selectbox(
-    'Select an action',
-    ('Book Recommendation', 'Chat with the Bot')
-)
-
-if option == 'Book Recommendation':
+# Main section for user interaction
+msg = st.text_input('You:', '')
+if st.button('Send'):
+    if msg:
+        response = chatbot_response(msg)
+        st.text_area('Bot:', value=response, height=200, max_chars=None, key=None)
+    else:
+        st.warning('Please enter a message.')
     category = st.text_input('Enter the type of book you want to read:')
     if st.button('Get Recommendations'):
         if category:
@@ -138,12 +139,3 @@ if option == 'Book Recommendation':
             st.markdown(result, unsafe_allow_html=True)
         else:
             st.warning('Please enter a category.')
-
-elif option == 'Chat with the Bot':
-    msg = st.text_input('You:', '')
-    if st.button('Send'):
-        if msg:
-            response = chatbot_response(msg)
-            st.text_area('Bot:', value=response, height=200, max_chars=None, key=None)
-        else:
-            st.warning('Please enter a message.')
