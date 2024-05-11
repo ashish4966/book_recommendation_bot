@@ -150,3 +150,23 @@ elif option == 'Chat with the Bot':
             if msg.lower() == "recommend me a book":
                 response = scrape_goodreads('')
                 st.text_area('Bot:', value=response, height=200, max_chars=None, key=None)
+                def getResponse(ints, intents_json):
+                tag = ints[0]['intent']
+                list_of_intents = intents_json['intents']
+                result = None
+                category = None
+                
+                for i in list_of_intents:
+                    if i['tag'] == tag:
+                        if tag == 'book_search':
+                            category = st.text_input("Sure, I'd be happy to recommend a book. What type of book are you in the mood for?")
+                            if st.button("Submit"):
+                                if category:
+                                    result = scrape_goodreads(category)
+                                else:
+                                    result = "Please enter a category."
+                        else:
+                            result = random.choice(i['responses'])
+                        break
+                
+                return result, category
