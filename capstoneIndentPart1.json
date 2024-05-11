@@ -5,6 +5,7 @@
             "patterns": [
                 "Hello",
                 "Hi",
+                "hi",
                 "Hey",
                 "Greetings",
                 "Good morning",
@@ -21,6 +22,7 @@
             "tag": "goodbye",
             "patterns": [
                 "Goodbye",
+                "Good bye",
                 "Bye",
                 "See you later",
                 "Adios",
